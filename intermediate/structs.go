@@ -20,11 +20,11 @@ type Address struct {
 	country string
 }
 
-func (p Person) fullName() string {
+func (p Person) FullName() string {
 	return p.firstName + " " + p.lastName
 }
 
-func (p *Person) incrementAgeByOne() {
+func (p *Person) IncrementAgeByOne() {
 	p.age++
 }
 
@@ -59,7 +59,7 @@ func main() {
 
 	fmt.Println(p1.firstName)
 	fmt.Println(p2.firstName)
-	fmt.Println(p1.fullName())
+	fmt.Println(p1.FullName())
 	fmt.Println(p1.address)
 	fmt.Println(p2.address.country)
 	fmt.Println(p1.cell)
@@ -77,6 +77,6 @@ func main() {
 
 	fmt.Println(user.username)
 	fmt.Println("Before increment", p1.age)
-	p1.incrementAgeByOne()
+	p1.IncrementAgeByOne()
 	fmt.Println("After increment", p1.age)
 }
