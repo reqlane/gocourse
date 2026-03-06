@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
+// ===== BLOCKING ON RECEIVE ONLY IF THE BUFFER IS EMPTY
 // func main() {
-// 	// ================ BLOCKING ON RECEIVE ONLY IF THE BUFFER IS EMPTY
 // 	ch := make(chan int, 2)
 
 // 	go func() {
@@ -20,8 +20,8 @@ import (
 // 	fmt.Println("End of program")
 // }
 
+// ===== BLOCKING ON SEND ONLY IF THE BUFFER IS FULL
 func main() {
-	// ================ BLOCKING ON SEND ONLY IF THE BUFFER IS FULL
 	// variable := make(chan Type, capacity)
 	ch := make(chan int, 2)
 
