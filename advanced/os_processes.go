@@ -1,0 +1,94 @@
+package advanced
+
+import (
+	"fmt"
+	"os/exec"
+)
+
+func main() {
+
+	cmd := exec.Command("ls", "-l")
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	fmt.Println("Output:", string(output))
+
+	// ===== io.Pipe()
+	// pr, pw := io.Pipe()
+	// cmd := exec.Command("grep", "foo")
+	// cmd.Stdin = pr
+	// go func() {
+	// 	defer pw.Close()
+
+	// 	pw.Write([]byte("food is good\nbar\nbaz\n"))
+	// }()
+	// output, err := cmd.Output()
+	// if err != nil {
+	// 	fmt.Println("Error:", err)
+	// 	return
+	// }
+	// fmt.Println("Output:", string(output))
+
+	// cmd := exec.Command("printenv", "SHELL")
+	// output, err := cmd.Output()
+	// if err != nil {
+	// 	fmt.Println("Error:", err)
+	// 	return
+	// }
+	// fmt.Println("Output:", string(output))
+
+	// ===== cmd.Process.Kill()
+	// cmd := exec.Command("sleep", "60")
+	// // Start the command
+	// err := cmd.Start()
+	// if err != nil {
+	// 	fmt.Println("Error starting command", err)
+	// 	return
+	// }
+	// time.Sleep(2 * time.Second)
+	// err = cmd.Process.Kill()
+	// if err != nil {
+	// 	fmt.Println("Error killing command", err)
+	// 	return
+	// }
+	// fmt.Println("Process killed")
+
+	// ===== cmd.Wait()
+	// cmd := exec.Command("sleep", "60")
+	// // Start the command
+	// err := cmd.Start()
+	// if err != nil {
+	// 	fmt.Println("Error starting command", err)
+	// 	return
+	// }
+	// // Waiting
+	// err = cmd.Wait()
+	// if err != nil {
+	// 	fmt.Println("Error waiting command", err)
+	// 	return
+	// }
+	// fmt.Println("Process is complete")
+
+	// ===== cmd.Stdin
+	// cmd := exec.Command("grep", "foo")
+	// // Set input for the command
+	// cmd.Stdin = strings.NewReader("food is good\nbar\nbaz\n")
+	// output, err := cmd.Output()
+	// if err != nil {
+	// 	fmt.Println("Error:", err)
+	// 	return
+	// }
+	// fmt.Println("Output:", string(output))
+
+	// ===== SIMPLE TASK
+	// cmd := exec.Command("echo", "Hello World!")
+	// output, err := cmd.Output()
+	// if err != nil {
+	// 	fmt.Println("Error:", err)
+	// 	return
+	// }
+
+	// fmt.Println("Output:", string(output))
+}
