@@ -8,12 +8,22 @@ import (
 	"time"
 )
 
-// === SIGINT
+// === LINUX
+// SIGINT
 // > Ctrl + C
-// === SIGTERM
-// > taskkill //pid 123456
-// === SIGKILL
-// > taskkill //f //pid 123456
+// > kill -s SIGINT <ProcessID>
+// SIGTERM
+// > kill -s SIGTERM <ProcessID>
+// SIGKILL
+// > kill -9 <ProcessID>
+
+// === WINDOWS
+// SIGINT
+// > Ctrl + C
+// SIGTERM
+// > taskkill //pid <ProcessID>
+// SIGKILL (doesn't work on windows as signal - forceful shutdown)
+// > taskkill //f //pid <ProcessID>
 
 func main() {
 
@@ -23,7 +33,7 @@ func main() {
 	done := make(chan struct{}, 1)
 
 	// Notify channel on interrupt or terminate signals
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGHUP, syscall.SIGUSR1)
 
 	go func() {
 		sig := <-sigs
@@ -35,30 +45,31 @@ func main() {
 		for {
 			select {
 			case <-done:
-				fmt.Println("Stopping work due to signal")
-				os.Exit(0)
+				fmt.Println("Stoping work due to signal")
+				// os.Exit(0)
 				return
 			default:
 				fmt.Println("Working...")
 				time.Sleep(time.Second)
 			}
 		}
+
 		// sig := <-sigs
 		// for sig := range sigs {
 		// 	switch sig {
 		// 	case syscall.SIGINT:
 		// 		fmt.Println("Received SIGINT (Interrupt)")
-		// 	case syscall.SIGTERM:
-		// 		fmt.Println("Received SIGTERM (Terminate)")
+		// 	// case syscall.SIGTERM:
+		// 	// 	fmt.Println("Received SIGTERM (Terminate)")
 		// 	case syscall.SIGHUP:
 		// 		fmt.Println("Received SIGHUP (Hangup)")
-		// 		// case syscall.SIGUSR1:
-		// 		// 	fmt.Println("Received SIGUSR1 (User defined Signal 1)")
-		// 		// 	fmt.Println("User defined function is executed")
-		// 		// 	continue
+		// 	case syscall.SIGUSR1:
+		// 		fmt.Println("Received SIGUSR1 (User defined signal 1)")
+		// 		fmt.Println("User defined function is executed")
+		// 		// continue
 		// 	}
-		// 	fmt.Println("Graceful exit")
-		// 	os.Exit(0)
+		// 	// fmt.Println("Graceful exit")
+		// 	// os.Exit(0)
 		// }
 	}()
 
