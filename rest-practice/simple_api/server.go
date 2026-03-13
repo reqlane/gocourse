@@ -2,15 +2,20 @@ package main
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"golang.org/x/net/http2"
 )
 
 // ===== CREATE CERTIFICATE AND KEY
-// > openssl req -x509 -newkey rsa:2048 -nodes -keyout key.pem -out cert.pem -days 365
+// openssl req -x509 -newkey rsa:2048 -nodes -keyout key.pem -out cert.pem -days 365
+
+// ===== CREATE CERTIFICATE AND KEY WITH CONFIG (for Postman)
+// openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout key.pem -out cert.pem -config openssl.cnf
 
 // req: Use the PKCS#10 certificate request and generation utility.
 // -x509: Create a self-signed certificate instead of a request (CSR).
@@ -24,13 +29,28 @@ import (
 // PEM (Privacy Enhanced Mail) - base64 encoded
 // Same as .crt | .key
 
+// curl -v -k https://localhost:3000/orders
+
+// mTLS - load client's certificate
+func loadClientCAs() *x509.CertPool {
+	clientCAs := x509.NewCertPool()
+	caCert, err := os.ReadFile("cert.pem")
+	if err != nil {
+		log.Fatalln("Could not load client CAs:", err)
+	}
+	clientCAs.AppendCertsFromPEM(caCert)
+	return clientCAs
+}
+
 func main() {
 
 	http.HandleFunc("/orders", func(w http.ResponseWriter, r *http.Request) {
+		logRequestDetails(r)
 		fmt.Fprintf(w, "Handling incoming orders")
 	})
 
 	http.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
+		logRequestDetails(r)
 		fmt.Fprintf(w, "Handling users")
 	})
 
@@ -43,6 +63,8 @@ func main() {
 	// Configure TLS
 	tlsConfig := &tls.Config{
 		MinVersion: tls.VersionTLS12,
+		// ClientAuth: tls.RequireAndVerifyClientCert, // Enforce mTLS (mutual TLS)
+		// ClientCAs:  loadClientCAs(),                // Enforce mTLS (mutual TLS)
 	}
 
 	// Create a custom server
@@ -67,4 +89,31 @@ func main() {
 	// if err != nil {
 	// 	log.Fatalln("Could not start the server:", err)
 	// }
+}
+
+func logRequestDetails(r *http.Request) {
+	httpVersion := r.Proto
+	fmt.Println("Received request with HTTP version:", httpVersion)
+
+	if r.TLS != nil {
+		tlsVersion := getTLSVersionName(r.TLS.Version)
+		fmt.Println("Received request with TLS version:", tlsVersion)
+	} else {
+		fmt.Println("Received request without TLS")
+	}
+}
+
+func getTLSVersionName(version uint16) string {
+	switch version {
+	case tls.VersionTLS10:
+		return "TLS 1.0"
+	case tls.VersionTLS11:
+		return "TLS 1.1"
+	case tls.VersionTLS12:
+		return "TLS 1.2"
+	case tls.VersionTLS13:
+		return "TLS 1.3"
+	default:
+		return "Unknown TLS version"
+	}
 }
