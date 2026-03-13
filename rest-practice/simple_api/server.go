@@ -29,7 +29,16 @@ import (
 // PEM (Privacy Enhanced Mail) - base64 encoded
 // Same as .crt | .key
 
+// ===== BENCHMARKING API
+// (single request)
 // curl -v -k https://localhost:3000/orders
+
+// (http1.1 benchmarking)
+// wrk -t8 -c400 -d30s "http://localhost:3000/"
+// h2load --h1 -n 1000000 -c 100 -t 8 "http://localhost:3000/"
+
+// (http2 benchmarking)
+// h2load -n 1000000 -c 100 -t 8 "https://localhost:3000/"
 
 // mTLS - load client's certificate
 func loadClientCAs() *x509.CertPool {
